@@ -1,4 +1,4 @@
-`include "ADE7753.h"
+#include "ADE7753.h"
 
 #define DATAOUT 51 // MOSI
 #define DATAIN 50 // MISO 
@@ -60,12 +60,14 @@ void setup () {
 
 //  address = LINECYC;
   long_eeprom_data = read_eeprom(MODE, 2);
-  Serial.println("reg MODE = %x", long_eeprom_data);
+  Serial.print("reg MODE = ");
+  Serial.println(long_eeprom_data, HEX);
 
   long TestWrite;
   TestWrite = 0xABCD;
   Serial.println(TestWrite, BIN);
   write_to_eeprom(address, TestWrite, 2);
+  delay(1000);
   eeprom_output_data = read_eeprom(address, 2);
   Serial.println(eeprom_output_data, BIN);
   Serial.println("Completed basic read write test");
@@ -112,12 +114,15 @@ long read_eeprom(int EEPROM_address, int bytes_to_read)
   long data = 0;
   byte reader_buf = 0;
   digitalWrite(SLAVESELECT,LOW);
+  delayMicroseconds(1); // ADE7753, t1=50ns
   spi_transfer((char)(EEPROM_address)); // send LSByte address
+  delayMicroseconds(5); // ADE7753, t9=4us
 
   for (int i=1; i <= bytes_to_read; i++) {
     reader_buf = spi_transfer(0xFF); //get data byte
     Serial.println(i);
     Serial.println(reader_buf, HEX);
+    delayMicroseconds(1); // ADE7753, t10=50ns
 
     data = data|reader_buf;
     if (i< bytes_to_read) {
@@ -131,31 +136,8 @@ long read_eeprom(int EEPROM_address, int bytes_to_read)
 }
 
 void loop () {
-/*
-   eeprom_output_data = read_eeprom(STATUS,2);
-   Serial.println("STATUS CHECK");
-   Serial.println(eeprom_output_data, BIN);
-   Serial.println(eeprom_output_data, HEX);
-   delay(1000);
-   eeprom_output_data = read_eeprom(LINECYC,2);
-   Serial.println("LINECYC CHECK");
-   Serial.println(eeprom_output_data, BIN);
-   Serial.println(eeprom_output_data, HEX);   
-
-  delay(1000);
-   eeprom_output_data = read_eeprom(TEMP,1);
-   Serial.println("TEMP CHECK");
-   Serial.println(eeprom_output_data, BIN);
-   Serial.println(eeprom_output_data, HEX);   
-
-   delay(1000);
-   eeprom_output_data = read_eeprom(IRMS,3);
-   Serial.println("IRMS CHECK");
-   Serial.println(eeprom_output_data, BIN);
-   Serial.println(eeprom_output_data, HEX); 
- */
    long_eeprom_data = read_eeprom(MODE, 2);
    Serial.println("MODE CHECK");
    Serial.println(long_eeprom_data, HEX);
-   delay(5000);
+   delay(1000);
 }
