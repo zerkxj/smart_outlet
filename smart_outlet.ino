@@ -42,6 +42,7 @@ void rd_irms () {
 void setup () {
   Serial.begin(9600);
 
+  // setup SPI I/F for ADE7753
   pinMode(DATAOUT, OUTPUT);
   pinMode(DATAIN, INPUT);
   pinMode(SPICLOCK,OUTPUT);
@@ -58,19 +59,23 @@ void setup () {
   delay(1000);
 
 
-//  address = LINECYC;
   long_eeprom_data = read_eeprom(MODE, 2);
   Serial.print("reg MODE = ");
   Serial.println(long_eeprom_data, HEX);
 
+  address = LINECYC;
   long TestWrite;
   TestWrite = 0xABCD;
-  Serial.println(TestWrite, BIN);
+  Serial.print("write register LINECYC = 0x");
+  Serial.println(TestWrite, HEX);
   write_to_eeprom(address, TestWrite, 2);
   delay(1000);
-  eeprom_output_data = read_eeprom(address, 2);
-  Serial.println(eeprom_output_data, BIN);
-  Serial.println("Completed basic read write test");
+  long_eeprom_data = read_eeprom(address, 2);
+  Serial.println(eeprom_output_data, HEX);
+  if (TestWrite == long_eeprom_data)
+    Serial.println("Completed basic write test OK...");
+  else
+    Serial.println("Completed basic write test Fail...");
 
   attachInterrupt(2, rd_irms, RISING); // setup ISR
 
@@ -120,7 +125,9 @@ long read_eeprom(int EEPROM_address, int bytes_to_read)
 
   for (int i=1; i <= bytes_to_read; i++) {
     reader_buf = spi_transfer(0xFF); //get data byte
-    Serial.println(i);
+    Serial.print("byte ");
+    Serial.print(i);
+    Serial.print("= 0x");
     Serial.println(reader_buf, HEX);
     delayMicroseconds(1); // ADE7753, t10=50ns
 
@@ -129,7 +136,7 @@ long read_eeprom(int EEPROM_address, int bytes_to_read)
       data = data<<8;
     }
   }
-  Serial.print("completed. data was>");
+  Serial.print("read completed. data was --> 0x");
   Serial.println(data, HEX);
   digitalWrite(SLAVESELECT,HIGH); // release chip, signal end transfer
   return data;
