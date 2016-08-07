@@ -1,3 +1,6 @@
+#ifndef ADE7753_H_INCLUDED
+#define ADE7753_H_INCLUDED
+
 //registers on ADE7753  
 #define WAVEFORM 0x01
 #define AENERGY 0x02
@@ -40,3 +43,12 @@
 #define TMODE 0x3D
 #define CHKSUM 0x3E
 #define DIEREV 0x3F
+
+class ADE7753 {
+  public:
+    ADE7753();
+    void wr_reg (int addr, long data, int len);
+    long rd_reg (int addr, int len);
+    void rd_irms ();
+};
+#endif
