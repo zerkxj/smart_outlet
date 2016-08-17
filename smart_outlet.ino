@@ -1,6 +1,5 @@
 #include "ADE7753.h"
 #include "SPI.h"
-#include "ade7753.cpp"
 
 //#define DATAOUT 51 // MOSI
 //#define DATAIN 50 // MISO 

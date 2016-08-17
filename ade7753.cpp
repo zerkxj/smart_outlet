@@ -1,10 +1,20 @@
 #include "Arduino.h"
 #include "SPI.h"
 #include "ADE7753.h"
-#include "spi.cpp"
+//#include "spi.cpp"
 
 ADE7753::ADE7753() {
   Serial.println("ADE7753 initial done...");
+}
+
+char spi_transfer (volatile char data) {
+  SPDR = data; // Start the transmission
+
+  // Wait the end of the transmission
+  while (!(SPSR & (1<<SPIF))) {
+  };
+
+  return SPDR; // return the received byte
 }
 
 void ADE7753::wr_reg (int addr, long data, int len) {

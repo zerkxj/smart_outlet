@@ -1,6 +1,8 @@
 #ifndef ADE7753_H_INCLUDED
 #define ADE7753_H_INCLUDED
 
+#include "Arduino.h"
+
 //registers on ADE7753  
 #define WAVEFORM 0x01
 #define AENERGY 0x02
@@ -46,6 +48,9 @@
 
 class ADE7753 {
   public:
+    int voltage;
+    int current;
+    int power;
     ADE7753();
     void wr_reg (int addr, long data, int len);
     long rd_reg (int addr, int len);
