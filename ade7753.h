@@ -52,8 +52,8 @@ class ADE7753 {
     int current;
     int power;
     ADE7753();
-    void wr_reg (int addr, long data, int len);
-    long rd_reg (int addr, int len);
+    void wr_reg (byte addr, long data, int len);
+    long rd_reg (byte addr, int len);
     void rd_irms ();
 };
 #endif

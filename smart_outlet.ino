@@ -1,4 +1,4 @@
-#include "ADE7753.h"
+#include "ade7753.h"
 #include "SPI.h"
 
 //#define DATAOUT 51 // MOSI

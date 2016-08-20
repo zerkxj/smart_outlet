@@ -1,30 +1,19 @@
 #include "Arduino.h"
 #include "SPI.h"
-#include "ADE7753.h"
-//#include "spi.cpp"
+#include "ade7753.h"
 
 ADE7753::ADE7753() {
   Serial.println("ADE7753 initial done...");
 }
 
-char spi_transfer (volatile char data) {
-  SPDR = data; // Start the transmission
-
-  // Wait the end of the transmission
-  while (!(SPSR & (1<<SPIF))) {
-  };
-
-  return SPDR; // return the received byte
-}
-
-void ADE7753::wr_reg (int addr, long data, int len) {
+void ADE7753::wr_reg (byte addr, long data, int len) {
   Serial.println("Data write starts =====");
   byte write_cmd = B10000000;
   byte data_wr = B00000000;
 
   addr = addr | write_cmd;
   digitalWrite(SS,LOW);
-  spi_transfer((char)(addr)); //send address
+  SPI.transfer(addr); //send address
 
   //here there should be a t7 delay, however long that is
   for (int i=0; i<len; i++) {
@@ -33,22 +22,22 @@ void ADE7753::wr_reg (int addr, long data, int len) {
     Serial.println(i);
     Serial.print("= 0x");
     Serial.println(data_wr, HEX);
-    spi_transfer((char)(data_wr)); //send data byte
+    SPI.transfer(data_wr); //send data byte
   }
   digitalWrite(SS,HIGH); //release chip, signal end transfer
 }
 
-long ADE7753::rd_reg (int addr, int len) {
+long ADE7753::rd_reg (byte addr, int len) {
   Serial.println("Data read starts =====");
   long data_rd = 0;
   byte buf_rd = 0;
   digitalWrite(SS,LOW);
   delayMicroseconds(1); // ADE7753, t1=50ns
-  spi_transfer((char)(addr)); // send LSByte address
+  SPI.transfer(addr); // send LSByte address
   delayMicroseconds(5); // ADE7753, t9=4us
 
   for (int i=1; i<=len; i++) {
-    buf_rd = spi_transfer(0xFF); //get data byte
+    buf_rd = SPI.transfer(0xFF); //get data byte
     Serial.print("read byte ");
     Serial.print(i);
     Serial.print("= 0x");
@@ -71,7 +60,7 @@ void ADE7753::rd_irms () {
   data_rd = rd_reg(IRMS, 3); // read irms
   Serial.println("IRMS CHECK = 0x");
   Serial.println(data_rd, HEX);
-   
+
   data_rd = rd_reg(RSTSTATUS, 2);
   Serial.print("RSTSTATUS = 0x");
   Serial.println(data_rd, HEX);
