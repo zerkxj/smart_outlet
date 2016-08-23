@@ -1,26 +1,10 @@
 #include "ade7753.h"
 #include "SPI.h"
 
-//#define DATAOUT 51 // MOSI
-//#define DATAIN 50 // MISO 
-//#define SPICLOCK 52 // SCK
-//#define SLAVESELECT 53 // SS
-
-byte eeprom_output_data;
-byte eeprom_input_data = 0;
 long long_eeprom_data = 0;
 byte clr;
-int address = 0;
 
 ADE7753 ade7753;
-
-//data buffer
-char buffer [128];
-
-void fill_buffer () {
-  for (int I=0; I<128; I++)
-    buffer[I]=I;
-}
 
 void setup () {
   Serial.begin(9600);
@@ -41,20 +25,19 @@ void setup () {
   Serial.println("init  SPI complete");
   delay(1000);
 
-
   long_eeprom_data = ade7753.rd_reg(MODE, 2);
-  Serial.print("reg MODE = ");
+  Serial.print("reg MODE = 0x");
   Serial.println(long_eeprom_data, HEX);
 
-  address = LINECYC;
   long TestWrite;
   TestWrite = 0xABCD;
   Serial.print("write register LINECYC = 0x");
   Serial.println(TestWrite, HEX);
-  ade7753.wr_reg(address, TestWrite, 2);
+  ade7753.wr_reg(LINECYC, TestWrite, 2);
   delay(1000);
-  long_eeprom_data = ade7753.rd_reg(address, 2);
-  Serial.println(eeprom_output_data, HEX);
+  long_eeprom_data = ade7753.rd_reg(LINECYC, 2);
+  Serial.print("read register LINECYC = 0x");
+  Serial.println(long_eeprom_data, HEX);
   if (TestWrite == long_eeprom_data)
     Serial.println("Completed basic write test OK...");
   else
@@ -64,12 +47,12 @@ void setup () {
 
   // check interrupt enable setting
   long_eeprom_data = ade7753.rd_reg(IRQEN, 2);
-  Serial.print("before setup..., IREQEN = ");
+  Serial.print("before setup..., IREQEN = 0x");
   Serial.println(long_eeprom_data, HEX);
 
   ade7753.wr_reg(IRQEN, 0x0010, 2); // set interrupt enable for zero crossing
   long_eeprom_data = ade7753.rd_reg(IRQEN, 2); // check interrupt enable setting
-  Serial.print("after setup..., IREQEN = ");
+  Serial.print("after setup..., IREQEN = 0x");
   Serial.println(long_eeprom_data, HEX);
 
   long_eeprom_data = ade7753.rd_reg(RSTSTATUS, 2); // reset interrupt status
