@@ -2,6 +2,11 @@
 //#include "Arduino.h"
 #include "esp8266.h"
 
+// Constructor
+ESP8266::ESP8266(Stream *s, Stream *d) : stream_pc(s), stream_esp8266(d) {
+  stream_pc -> print("esp8266 constructor test ok...");
+}
+
 void ESP8266::updateDHT11 ( String T, String H ) {
   // 設定 ESP8266 作為 Client 端
   String cmd = "AT+CIPSTART=\"TCP\",\"";
@@ -9,35 +14,35 @@ void ESP8266::updateDHT11 ( String T, String H ) {
   cmd += "\",80";
   sendDebug(cmd);
   delay(2000);
-  if (Serial.find("Error")) {
-    debug.print("RECEIVED: Error\nExit1");
+  if (stream_pc -> find("Error")) {
+    stream_esp8266 -> print("RECEIVED: Error\nExit1");
     return;
   }
 
   cmd = GET + "&field1=" + T + "&field2=" + H +"\r\n";
-  Serial.print("AT+CIPSEND=");
-  Serial.println(cmd.length());
-  if (Serial.find( ">" ) ) {
-    debug.print(">");
-    debug.print(cmd);
-    Serial.print(cmd);
+  stream_pc -> print("AT+CIPSEND=");
+  stream_pc -> println(cmd.length());
+  if (stream_pc -> find( ">" ) ) {
+    stream_esp8266 -> print(">");
+    stream_esp8266 -> print(cmd);
+    stream_pc -> print(cmd);
   } else
     sendDebug("AT+CIPCLOSE");
 
-  if (Serial.find("OK"))
-    debug.println("RECEIVED: OK");
+  if (stream_pc -> find("OK"))
+    stream_esp8266 -> println("RECEIVED: OK");
   else
-    debug.println("RECEIVED: Error\nExit2");
+    stream_esp8266 -> println("RECEIVED: Error\nExit2");
 }
 
 void ESP8266::sendDebug (String cmd) {
-  debug.print("SEND: ");
-  debug.println(cmd);
-  Serial.println(cmd);
+  stream_esp8266 -> print("SEND: ");
+  stream_esp8266 -> println(cmd);
+  stream_pc -> println(cmd);
 }
 
 boolean ESP8266::connect_wifi () {
-  Serial.println("AT+CWMODE=1");
+  stream_pc -> println("AT+CWMODE=1");
   delay(2000);
   String cmd="AT+CWJAP=\"";
   cmd+=SSID;
@@ -46,18 +51,18 @@ boolean ESP8266::connect_wifi () {
   cmd+="\"";
   sendDebug(cmd);
   delay(5000);
-  if (Serial.find("OK")) {
-    debug.println("RECEIVED: OK");
+  if (stream_pc -> find("OK")) {
+    stream_esp8266 -> println("RECEIVED: OK");
     return true;
   } else {
-    debug.println("RECEIVED: Error");
+    stream_esp8266 -> println("RECEIVED: Error");
     return false;
   }
 
   cmd = "AT+CIPMUX=0";
   sendDebug(cmd);
-  if ( Serial.find("Error")) {
-    debug.print("RECEIVED: Error");
+  if ( stream_pc -> find("Error")) {
+    stream_esp8266 -> print("RECEIVED: Error");
     return false;
   }
 }

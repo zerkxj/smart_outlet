@@ -7,7 +7,6 @@
 #define _baudrate 115200
 
 //*-- Software Serial
-// 
 #define _rxpin 10
 #define _txpin 11
 
@@ -21,9 +20,12 @@
 String GET = "GET /update?key=U7OT0B9MN9527NM4";
 
 class ESP8266 {
+  private:
+    Stream *stream_pc,
+           *stream_esp8266;
   public:
     String cmd;
-    ESP8266();
+    ESP8266(Stream *s = &Serial, Stream *d = NULL);
     void updateDHT11(String T, String H);
     void sendDebug(String cmd);
     boolean connect_wifi();
