@@ -3,7 +3,7 @@
 //#include "ade7753.h"
 //#include "SPI.h"
 
-//long long_eeprom_data = 0;
+//long long_eeprom_data = 0; // use for ADE7753
 //byte clr;
 
 // pin #10 is IN from sensor (GREEN wire)
@@ -98,7 +98,7 @@ void loop () {
   id_finger_print = fingerprint.getFingerprintIDez();
   if (id_finger_print >= 0) {
     if (led_switch)
-      digitalWrite(2, LOW);   // turn the LED on (HIGH is the voltage level)
+      digitalWrite(2, LOW);   // turn the LED off (LOW is the voltage level)
     else
       digitalWrite(2, HIGH);   // turn the LED on (HIGH is the voltage level)
 
@@ -106,6 +106,5 @@ void loop () {
   }
 
   delay(1000); //don't ned to run this at full speed.
-  Serial.println("1s...");
+  Serial.println("1 second...");
 }
-
