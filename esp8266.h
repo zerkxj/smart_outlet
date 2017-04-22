@@ -3,16 +3,24 @@
 
 #include "Arduino.h"
 
+#define NCTU_LAB 1
+
 //*-- Hardware Serial
 #define _baudrate 115200
 
 //*-- Software Serial
-#define _rxpin 10
+#define _rxpin 10 // Carlos: should be changed to other pin
 #define _txpin 11
 
 //*-- IoT Information
-#define SSID "B03B"
-#define PASS "B03B54396"
+#if NCTU_LAB
+    #define SSID "B03B"
+    #define PASS "B03B54396"
+#else
+    #define SSID "CHT6097"
+    #define PASS "HN74788414"
+#endif
+
 #define IP "184.106.153.149" // ThingSpeak IP Address: 184.106.153.149
 
 // 使用 GET 傳送資料的格式
@@ -20,10 +28,10 @@
 String GET = "GET /update?key=U7OT0B9MN9527NM4";
 
 class ESP8266 {
-  private:
+private:
     Stream *stream_pc,
            *stream_esp8266;
-  public:
+public:
     String cmd;
     ESP8266(Stream *s = &Serial, Stream *d = NULL);
     void updateDHT11(String T, String H);
